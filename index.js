@@ -9,7 +9,7 @@ const morgan = require("morgan");
 const port = process.env.PORT || 5000;
 // const stripe = require('stripe')(process.env.PAYMENT_SECRET_KEY)
 const corsOptions = {
-  origin: ["http://localhost:3000", "https://resu-magnet-frontend.vercel.app" ],
+  origin: ["http://localhost:3000","http://localhost:5000", "https://resu-magnet-frontend.vercel.app", "https://resu-magnet-backend.vercel.app" ],
   credentials: true,
   optionSuccessStatus: 200,
 };
@@ -50,6 +50,9 @@ run().catch(console.dir);
 
 const database = client.db("resuMagnet");
 const userCollection = database.collection("userCollection");
+const resumeCollection = database.collection("resumeCollection");
+const cvCollection = database.collection("cvCollection");
+const coverLetterCollection = database.collection("coverLetterCollection");
 
 //JWT Middleware
 app.post("/api/v1/auth/access-token", async (req, res) => {
@@ -93,12 +96,6 @@ const verify = async (req, res, next) => {
 
 
 // User related API
-app.post("/api/v1/create-users", async (req, res) =>{
-  const user = req.body;
-  console.log(user)
-  const result = await userCollection.insertOne(user);
-  res.send(result);
-})
 app.post('/api/v1/create-users', async(req, res) =>{
   const user =req.body;
   const query = {email: user.email}
@@ -142,8 +139,32 @@ catch(error){
 
 // resume api
 app.get("/api/v1/resume/:email", async(req, res) =>{
+ try{
   const email = req.params.email
-  
+  const query = {email: email}
+  const result = await resumeCollection.findOne(query)
+  res.send(result);
+ }
+ catch(error){
+    console.log(error)
+  }
+})
+//save resume data or update
+app.post('/api/v1/resume  ', async(req, res) =>{
+  try{
+    const resume =req.body;
+  const query = {email: resume.email}
+  const existingUser = await resumeCollection.findOne(query)
+  if(existingUser){
+    const result = await resumeCollection.updateOne({email: resume.email}, {$set: resume})
+    return res.send({message: 'resume updated', insertedId: null})
+  }
+  const result = await resumeCollection.insertOne(resume);
+  res.send(result);
+  }
+catch (err) {
+  console.log(err);
+}
 })
 //cover letter api
 
