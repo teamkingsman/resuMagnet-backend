@@ -70,9 +70,9 @@ app.post("/api/v1/auth/access-token", async (req, res) => {
     .send({ massage: "success" });
 });
 //logout
-app.post("/api/v1/auth/logout", async (req, res) => {
+app.get("/api/v1/auth/logout", async (req, res) => {
   try{
-    const user = req.body;
+    // const user = req.body;
   res.clearCookie("token", { maxAge: 0 }).send({ message: "success" });
   }
   catch{
