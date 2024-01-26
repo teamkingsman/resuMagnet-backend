@@ -150,7 +150,7 @@ app.get("/api/v1/resume/:email", async (req, res) => {
   }
 })
 //save resume data or update
-app.post('/api/v1/resume', async (req, res) => {
+app.put('/api/v1/resume', async (req, res) => {
   try {
     const resume = req.body;
     const query = { email: resume.email }
@@ -181,7 +181,7 @@ app.get("/api/v1/coverletter/:email", async (req, res) => {
   }
 })
 // cover letter post api
-app.post('/api/v1/coverletter', async (req, res) => {
+app.put('/api/v1/coverletter', async (req, res) => {
   try {
     const coverletter = req.body;
     const query = { email: coverletter.email }
@@ -213,7 +213,7 @@ app.get("/api/v1/cv/:email", async (req, res) => {
   }
 })
 // cv post api
-app.post('/api/v1/cv', async (req, res) => {
+app.put('/api/v1/cv', async (req, res) => {
   try {
     const cv = req.body;
     const query = { email: cv.email }
