@@ -114,17 +114,7 @@ app.get('/api/v1/users', async (req, res) => {
 })
 
 
-//google user
-//Todo check by user data base & 
-app.patch("/api/v1/users/:id", verify, async (req, res) => {
-  const id = req.params.id;
-  const user = req.body;
-  console.log(user)
-  const result = await userCollection.updateOne({ _id: new ObjectId(id) }
-    , { $set: user });
-  res.send(result);
-});
-
+// user data get by email
 app.get("/api/v1/users/:email", verify, async (req, res) => {
   try {
     const email = req.params.email
@@ -154,16 +144,12 @@ app.put('/api/v1/resume', async (req, res) => {
   try {
     const resume = req.body;
     const query = { email: resume.email }
-    const existingUser = await resumeCollection.findOne(query)
-    if (existingUser) {
-      const result = await resumeCollection.updateOne({ email: resume.email }, { $set: resume })
-      return res.send({ message: 'resume updated', insertedId: null })
-    }
-    const result = await resumeCollection.insertOne(resume);
-    res.send(result);
+    const result = await resumeCollection.updateOne(query, { $set: resume }, { upsert: true })
+    res.status(200).send(result)
   }
   catch (err) {
-    console.log(err);
+    console.error(err);
+    res.status(500).send({ message: 'An error occurred', error: err.message });
   }
 })
 
@@ -181,17 +167,14 @@ app.get("/api/v1/coverletter/:email", async (req, res) => {
   }
 })
 // cover letter post api
+
 app.put('/api/v1/coverletter', async (req, res) => {
   try {
     const coverletter = req.body;
     const query = { email: coverletter.email }
-    const existingUser = await resumeCollection.findOne(query)
-    if (existingUser) {
-      const result = await resumeCollection.updateOne({ email: coverletter.email }, { $set: coverletter })
-      return res.send({ message: 'coverletter updated', insertedId: null })
-    }
-    const result = await  coverLetterCollection.insertOne(coverletter);
-    res.send(result);
+    const result = await coverLetterCollection.updateOne(query, { $set: coverletter }, { upsert: true })
+    res.status(200).send(result)
+
   }
   catch (err) {
     console.log(err);
@@ -217,13 +200,8 @@ app.put('/api/v1/cv', async (req, res) => {
   try {
     const cv = req.body;
     const query = { email: cv.email }
-    const existingUser = await resumeCollection.findOne(query)
-    if (existingUser) {
-      const result = await resumeCollection.updateOne({ email: cv.email }, { $set: cv })
-      return res.send({ message: 'cv updated', insertedId: null })
-    }
-    const result = await  cvCollection.insertOne(cv);
-    res.send(result);
+    const result = await cvCollection.updateOne(query, { $set: cv }, { upsert: true })
+    return res.send(result)   
   }
   catch (err) {
     console.log(err);
@@ -239,27 +217,6 @@ app.put('/api/v1/cv', async (req, res) => {
 
 
 //  user comment 
-app.post('/comments', async (req, res) => {
-  const apply = req.body;
-  const result = await commentCollection.insertOne(apply);
-  res.send(result)
-})
-
-app.get('/comments', async (req, res) => {
-  let query = {}
-  if (req.query.email) {
-    query = { email: req.query.email }
-  }
-  const result = await commentCollection.find(query).toArray()
-  res.send(result)
-})
-
-app.get('/comments/:id', async (req, res) => {
-  const { survey_id } = req.params
-
-  const result = await commentCollection.find({ survey_id }).toArray()
-  res.send(result)
-})
 
 //Start server
 app.get("/", (req, res) => {
