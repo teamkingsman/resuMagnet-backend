@@ -143,7 +143,7 @@ app.get("/api/v1/resume/:email", async (req, res) => {
 app.put('/api/v1/resume', async (req, res) => {
   try {
     const resume = req.body;
-    const query = { email: resume.email }
+    const query = { userEmail: resume.email }
     const result = await resumeCollection.updateOne(query, { $set: resume }, { upsert: true })
     res.status(200).send(result)
   }
@@ -158,7 +158,7 @@ app.put('/api/v1/resume', async (req, res) => {
 app.get("/api/v1/coverletter/:email", async (req, res) => {
   try {
     const email = req.params.email
-    const query = { email: email }
+    const query = { userEmail: email }
     const result = await coverLetterCollection.findOne(query)
     res.send(result);
   }
@@ -171,7 +171,7 @@ app.get("/api/v1/coverletter/:email", async (req, res) => {
 app.put('/api/v1/coverletter', async (req, res) => {
   try {
     const coverletter = req.body;
-    const query = { email: coverletter.email }
+    const query = { userEmail: coverletter.userEmail }
     const result = await coverLetterCollection.updateOne(query, { $set: coverletter }, { upsert: true })
     res.status(200).send(result)
 
@@ -187,7 +187,7 @@ app.put('/api/v1/coverletter', async (req, res) => {
 app.get("/api/v1/cv/:email", async (req, res) => {
   try {
     const email = req.params.email
-    const query = { email: email }
+    const query = { userEmail: email }
     const result = await cvCollection.findOne(query)
     res.send(result);
   }
@@ -199,7 +199,7 @@ app.get("/api/v1/cv/:email", async (req, res) => {
 app.put('/api/v1/cv', async (req, res) => {
   try {
     const cv = req.body;
-    const query = { email: cv.email }
+    const query = { userEmail: cv.userEmail }
     const result = await cvCollection.updateOne(query, { $set: cv }, { upsert: true })
     return res.send(result)   
   }
