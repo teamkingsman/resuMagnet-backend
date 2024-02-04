@@ -160,7 +160,7 @@ app.get("/api/v1/users/:email", verify, async (req, res) => {
 app.get("/api/v1/resume/:email", async (req, res) => {
   try {
     const email = req.params.email
-    const query = { email: email }
+    const query = { userEmail: email }
     const result = await resumeCollection.findOne(query)
     res.send(result);
   }
