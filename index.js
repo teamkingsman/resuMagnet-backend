@@ -53,6 +53,7 @@ const userCollection = database.collection("userCollection");
 const resumeCollection = database.collection("resumeCollection");
 const cvCollection = database.collection("cvCollection");
 const coverLetterCollection = database.collection("coverLetterCollection");
+const resumePublicCollection = database.collection("resumePublicCollection");
 
 //JWT Middleware
 app.post("/api/v1/auth/access-token", async (req, res) => {
@@ -69,6 +70,8 @@ app.post("/api/v1/auth/access-token", async (req, res) => {
     })
     .send({ massage: "success" });
 });
+
+
 //logout
 app.get("/api/v1/auth/logout", async (req, res) => {
   try {
@@ -125,7 +128,27 @@ app.get("/api/v1/users/:email", verify, async (req, res) => {
     console.log(error)
   }
 });
+// ----------Public share api--------//
 
+app.get("/api/v1/publicResume/:id", async (req, res) => {
+  try{
+  const id= req.params.id;
+  const publicQuery = { _id: ObjectId(id) }
+  const publicResult = await resumePublicCollection.findOne(publicQuery);
+  const query={_id: ObjectId(publicResult.resumeId)}
+  const result = await resumeCollection.findOne(query);
+  res.send(result)
+  }
+  catch(error){
+    console.log(error)
+  }
+})
+app.post('/api/v1/publicResume',async (req, res) => {
+  const user = req.body;
+  const result = await resumePublicCollection.insertOne(user);
+  res.send(result);
+  
+})
 // ---------------------- Resume Api ----------------- //
 // resume api
 app.get("/api/v1/resume/:email", async (req, res) => {
