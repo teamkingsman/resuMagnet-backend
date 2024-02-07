@@ -106,10 +106,39 @@ app.post('/api/v1/create-users', async (req, res) => {
   if (existingUser) {
     return res.send({ message: 'user already exists', insertedId: null })
   }
-  const result = await userCollection.insertOne(user);
+  const result = await userCollection.insertOne({...user, timestamp: Date.now()});
   res.send(result);
 })
-
+app.put('/users/:email', async (req, res) => {
+  const email = req.params.email
+  const user = req.body
+  const query = { email: email }
+  const options = { upsert: true }
+  const isExist = await userCollection.findOne(query)
+  console.log('User found?----->', isExist)
+  if (isExist) {
+    if (user?.status === 'Requested') {
+      const result = await userCollection.updateOne(
+        query,
+        {
+          $set: user,
+        },
+        options
+      )
+      return res.send(result)
+    } else {
+      return res.send(isExist)
+    }
+  }
+  const result = await userCollection.updateOne(
+    query,
+    {
+      $set: { ...user, timestamp: Date.now() },
+    },
+    options
+  )
+  res.send(result)
+})
 // all user data get
 app.get('/api/v1/users', async (req, res) => {
   const result = await userCollection.find().toArray()
@@ -144,9 +173,11 @@ app.get("/api/v1/publicResume/:id", async (req, res) => {
   }
 })
 app.post('/api/v1/publicResume',async (req, res) => {
-  const user = req.body;
+  const data = req.body;
   const result = await resumePublicCollection.insertOne(user);
-  res.send(result);
+  const query = {resumeId:data.resumeId}
+  const rsultId = await resumeCollection.findOne(query)
+  res.send(rsultId);
   
 })
 // ---------------------- Resume Api ----------------- //
@@ -155,6 +186,17 @@ app.get("/api/v1/resume/:email", async (req, res) => {
   try {
     const email = req.params.email
     const query = { userEmail: email }
+    const result = await resumeCollection.findOne(query)
+    res.send(result);
+  }
+  catch (error) {
+    console.log(error)
+  }
+})
+app.get("/api/v1/getresume/:id", async (req, res) => {
+  try {
+    const id = req.params.id
+    const query = {_id: ObjectId(id) }
     const result = await resumeCollection.findOne(query)
     res.send(result);
   }
