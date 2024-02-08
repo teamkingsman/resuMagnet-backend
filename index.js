@@ -162,9 +162,9 @@ app.get("/api/v1/users/:email", verify, async (req, res) => {
 app.get("/api/v1/publicResume/:id", async (req, res) => {
   try{
   const id= req.params.id;
-  const publicQuery = { _id: ObjectId(id) }
+  const publicQuery = { _id: new ObjectId(id) }
   const publicResult = await resumePublicCollection.findOne(publicQuery);
-  const query={_id: ObjectId(publicResult.resumeId)}
+  const query={_id: new ObjectId(publicResult.resumeId)}
   const result = await resumeCollection.findOne(query);
   res.send(result)
   }
@@ -196,7 +196,8 @@ app.get("/api/v1/resume/:email", async (req, res) => {
 app.get("/api/v1/getresume/:id", async (req, res) => {
   try {
     const id = req.params.id
-    const query = {_id: ObjectId(id) }
+    console.log(id);
+    const query = {_id: new ObjectId(id) }
     const result = await resumeCollection.findOne(query)
     res.send(result);
   }
