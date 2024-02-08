@@ -193,6 +193,28 @@ app.get("/api/v1/resume/:email", async (req, res) => {
     console.log(error)
   }
 })
+app.get("/api/v1/resume/:email", async (req, res) => {
+  try {
+    const email = req.params.email
+    const query = { userEmail: email }
+    const result = await resumeCollection.findOne(query)
+    res.send(result);
+  }
+  catch (error) {
+    console.log(error)
+  }
+})
+app.get("/api/v1/getresume/:id", async (req, res) => {
+  try {
+    const id = req.params.id
+    const query = { _id: new ObjectId(id) }
+    const result = await resumeCollection.findOne(query)
+    res.send(result);
+  }
+  catch (error) {
+    console.log(error)
+  }
+})
 //save resume data or update
 app.put('/api/v1/resume', async (req, res) => {
   try {
