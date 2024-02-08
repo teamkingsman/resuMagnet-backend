@@ -193,6 +193,7 @@ app.get("/api/v1/resume/:email", async (req, res) => {
     console.log(error)
   }
 })
+
 app.get("/api/v1/getresume/:id", async (req, res) => {
   try {
     const id = req.params.id
@@ -254,6 +255,17 @@ app.get("/api/v1/cv/:email", async (req, res) => {
   try {
     const email = req.params.email
     const query = { userEmail: email }
+    const result = await cvCollection.findOne(query)
+    res.send(result);
+  }
+  catch (error) {
+    console.log(error)
+  }
+})
+app.get("/api/v1/getcv/:id", async (req, res) => {
+  try {
+    const id = req.params.id
+    const query = {_id: new ObjectId(id) }
     const result = await cvCollection.findOne(query)
     res.send(result);
   }
