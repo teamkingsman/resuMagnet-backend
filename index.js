@@ -53,6 +53,7 @@ const userCollection = database.collection("userCollection");
 const resumeCollection = database.collection("resumeCollection");
 const cvCollection = database.collection("cvCollection");
 const coverLetterCollection = database.collection("coverLetterCollection");
+const resumePublicCollection = database.collection("resumePublicCollection");
 
 //JWT Middleware
 app.post("/api/v1/auth/access-token", async (req, res) => {
@@ -69,6 +70,8 @@ app.post("/api/v1/auth/access-token", async (req, res) => {
     })
     .send({ massage: "success" });
 });
+
+
 //logout
 app.get("/api/v1/auth/logout", async (req, res) => {
   try {
@@ -103,10 +106,39 @@ app.post('/api/v1/create-users', async (req, res) => {
   if (existingUser) {
     return res.send({ message: 'user already exists', insertedId: null })
   }
-  const result = await userCollection.insertOne(user);
+  const result = await userCollection.insertOne({...user, timestamp: Date.now()});
   res.send(result);
 })
-
+app.put('/users/:email', async (req, res) => {
+  const email = req.params.email
+  const user = req.body
+  const query = { email: email }
+  const options = { upsert: true }
+  const isExist = await userCollection.findOne(query)
+  console.log('User found?----->', isExist)
+  if (isExist) {
+    if (user?.status === 'Requested') {
+      const result = await userCollection.updateOne(
+        query,
+        {
+          $set: user,
+        },
+        options
+      )
+      return res.send(result)
+    } else {
+      return res.send(isExist)
+    }
+  }
+  const result = await userCollection.updateOne(
+    query,
+    {
+      $set: { ...user, timestamp: Date.now() },
+    },
+    options
+  )
+  res.send(result)
+})
 // all user data get
 app.get('/api/v1/users', async (req, res) => {
   const result = await userCollection.find().toArray()
@@ -125,7 +157,29 @@ app.get("/api/v1/users/:email", verify, async (req, res) => {
     console.log(error)
   }
 });
+// ----------Public share api--------//
 
+app.get("/api/v1/publicResume/:id", async (req, res) => {
+  try{
+  const id= req.params.id;
+  const publicQuery = { _id: new ObjectId(id) }
+  const publicResult = await resumePublicCollection.findOne(publicQuery);
+  const query={_id: new ObjectId(publicResult.resumeId)}
+  const result = await resumeCollection.findOne(query);
+  res.send(result)
+  }
+  catch(error){
+    console.log(error)
+  }
+})
+app.post('/api/v1/publicResume',async (req, res) => {
+  const data = req.body;
+  const result = await resumePublicCollection.insertOne(user);
+  const query = {resumeId:data.resumeId}
+  const rsultId = await resumeCollection.findOne(query)
+  res.send(rsultId);
+  
+})
 // ---------------------- Resume Api ----------------- //
 // resume api
 app.get("/api/v1/resume/:email", async (req, res) => {
@@ -207,6 +261,17 @@ app.get("/api/v1/cv/:email", async (req, res) => {
   try {
     const email = req.params.email
     const query = { userEmail: email }
+    const result = await cvCollection.findOne(query)
+    res.send(result);
+  }
+  catch (error) {
+    console.log(error)
+  }
+})
+app.get("/api/v1/getcv/:id", async (req, res) => {
+  try {
+    const id = req.params.id
+    const query = {_id: new ObjectId(id) }
     const result = await cvCollection.findOne(query)
     res.send(result);
   }
