@@ -106,7 +106,7 @@ app.post('/api/v1/create-users', async (req, res) => {
   if (existingUser) {
     return res.send({ message: 'user already exists', insertedId: null })
   }
-  const result = await userCollection.insertOne({...user, timestamp: Date.now()});
+  const result = await userCollection.insertOne({ ...user, timestamp: Date.now() });
   res.send(result);
 })
 app.put('/users/:email', async (req, res) => {
@@ -159,27 +159,27 @@ app.get("/api/v1/users/:email", verify, async (req, res) => {
 });
 // ----------Public share api--------//
 
-app.get("/api/v1/publicResume/:id", async (req, res) => {
-  try{
-  const id= req.params.id;
-  const publicQuery = { _id: new ObjectId(id) }
-  const publicResult = await resumePublicCollection.findOne(publicQuery);
-  const query={_id: new ObjectId(publicResult.resumeId)}
-  const result = await resumeCollection.findOne(query);
-  res.send(result)
-  }
-  catch(error){
-    console.log(error)
-  }
-})
-app.post('/api/v1/publicResume',async (req, res) => {
-  const data = req.body;
-  const result = await resumePublicCollection.insertOne(user);
-  const query = {resumeId:data.resumeId}
-  const rsultId = await resumeCollection.findOne(query)
-  res.send(rsultId);
-  
-})
+// app.get("/api/v1/publicResume/:id", async (req, res) => {
+//   try {
+//     const id = req.params.id;
+//     const publicQuery = { _id: new ObjectId(id) }
+//     const publicResult = await resumePublicCollection.findOne(publicQuery);
+//     const query = { _id: new ObjectId(publicResult.resumeId) }
+//     const result = await resumeCollection.findOne(query);
+//     res.send(result)
+//   }
+//   catch (error) {
+//     console.log(error)
+//   }
+// })
+// app.post('/api/v1/publicResume', async (req, res) => {
+//   const data = req.body;
+//   const result = await resumePublicCollection.insertOne(user);
+//   const query = { resumeId: data.resumeId }
+//   const rsultId = await resumeCollection.findOne(query)
+//   res.send(rsultId);
+
+// })
 // ---------------------- Resume Api ----------------- //
 // resume api
 app.get("/api/v1/resume/:email", async (req, res) => {
@@ -221,15 +221,15 @@ app.put('/api/v1/resume', async (req, res) => {
     const resume = req.body;
     const query = { userEmail: resume.email }
     const queryObj = await resumeCollection.findOne(query)
-    const id = queryObj?._id  
+    const id = queryObj?._id
     if (id) {
-      const result = await resumeCollection.updateOne({ _id: ObjectId(id) }, { $set: resume }, { upsert: true })
+      const result = await resumeCollection.updateOne({ _id: new ObjectId(id) }, { $set: resume }, { upsert: true })
       res.status(200).send(result)
     }
     else {
       const result = await resumeCollection.insertOne(resume)
       res.status(200).send(result)
-    }  
+    }
   }
   catch (err) {
     console.error(err);
@@ -238,15 +238,15 @@ app.put('/api/v1/resume', async (req, res) => {
 })
 //update resume template
 app.patch('/api/v1/resume/:id/template', async (req, res) => {
- try {
-  const id = req.params.id
-  const template = req.body
-  const result = await resumeCollection.updateOne({ _id: new ObjectId(id) }, { $set: template })
-  res.status(200).send(result)
- } catch (error) {
+  try {
+    const id = req.params.id
+    const template = req.body
+    const result = await resumeCollection.updateOne({ _id: new ObjectId(id) }, { $set: template })
+    res.status(200).send(result)
+  } catch (error) {
     console.log(error)
     res.status(500).send({ message: 'An error occurred', error: error.message });
- }
+  }
 })
 // --------------------Cover Letter ---------------- //
 //cover letter api
@@ -293,7 +293,7 @@ app.get("/api/v1/cv/:email", async (req, res) => {
 app.get("/api/v1/getcv/:id", async (req, res) => {
   try {
     const id = req.params.id
-    const query = {_id: new ObjectId(id) }
+    const query = { _id: new ObjectId(id) }
     const result = await cvCollection.findOne(query)
     res.send(result);
   }
@@ -306,15 +306,33 @@ app.put('/api/v1/cv', async (req, res) => {
   try {
     const cv = req.body;
     const query = { userEmail: cv.userEmail }
-    const result = await cvCollection.updateOne(query, { $set: cv }, { upsert: true })
-    return res.send(result)   
+    const queryObj = await cvCollection.findOne(query)
+    const id = queryObj?._id
+    if (id) {
+      const result = await cvCollection.updateOne({ _id: new ObjectId(id) }, { $set: cv }, { upsert: true })
+      res.status(200).send(result)
+    }
+    else {
+      const result = await cvCollection.insertOne(cv)
+      res.status(200).send(result)
+    }
   }
   catch (err) {
     console.log(err);
   }
 })
 
-
+app.patch('/api/v1/cv/:id/template', async (req, res) => {
+  try {
+    const id = req.params.id
+    const template = req.body
+    const result = await cvCollection.updateOne({ _id: new ObjectId(id) }, { $set: template })
+    res.status(200).send(result)
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({ message: 'An error occurred', error: error.message });
+  }
+})
 
 
 
