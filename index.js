@@ -204,6 +204,18 @@ app.get("/api/v1/resume/:email", async (req, res) => {
     console.log(error)
   }
 })
+// find all
+app.get("/api/v1/all-resume/:email", async (req, res) => {
+  try {
+    const email = req.params.email
+    const query = { userEmail: email }
+    const result = await resumeCollection.find(query).toArray()
+    res.send(result);
+  }
+  catch (error) {
+    console.log(error)
+  }
+})
 app.get("/api/v1/getresume/:id", async (req, res) => {
   try {
     const id = req.params.id
@@ -261,6 +273,18 @@ app.get("/api/v1/coverletter/:email", async (req, res) => {
     console.log(error)
   }
 })
+// find all
+app.get("/api/v1/all-coverletter/:email", async (req, res) => {
+  try {
+    const email = req.params.email
+    const query = { userEmail: email }
+    const result = await coverLetterCollection.find(query).toArray()
+    res.send(result);
+  }
+  catch (error) {
+    console.log(error)
+  }
+})
 // cover letter post api
 
 app.put('/api/v1/coverletter', async (req, res) => {
@@ -284,6 +308,18 @@ app.get("/api/v1/cv/:email", async (req, res) => {
     const email = req.params.email
     const query = { userEmail: email }
     const result = await cvCollection.findOne(query)
+    res.send(result);
+  }
+  catch (error) {
+    console.log(error)
+  }
+})
+// find all
+app.get("/api/v1/all-cv/:email", async (req, res) => {
+  try {
+    const email = req.params.email
+    const query = { userEmail: email }
+    const result = await cvCollection.find(query).toArray()
     res.send(result);
   }
   catch (error) {
