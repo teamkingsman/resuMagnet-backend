@@ -54,6 +54,7 @@ const resumeCollection = database.collection("resumeCollection");
 const cvCollection = database.collection("cvCollection");
 const coverLetterCollection = database.collection("coverLetterCollection");
 const resumePublicCollection = database.collection("resumePublicCollection");
+const UserReviewcollections = database.collection("UserReviewcollections");
 
 //JWT Middleware
 app.post("/api/v1/auth/access-token", async (req, res) => {
@@ -370,6 +371,19 @@ app.patch('/api/v1/cv/:id/template', async (req, res) => {
   }
 })
 
+// ------------cient review----------------//
+app.post('/api/v1/reviews', async (req, res) => {
+  const review = req.body;
+  const result = await UserReviewcollections.insertOne(review);
+  res.send(result)
+
+})
+
+app.get('/api/v1/reviews', async (req, res) => {
+  const cursor =  UserReviewcollections.find()
+  const result = await cursor.toArray();
+  res.send(result)
+})
 
 
 
