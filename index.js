@@ -195,15 +195,17 @@ app.get("/api/v1/resume/:email", async (req, res) => {
     console.log(error)
   }
 })
-app.get("/api/v1/resume/:email", async (req, res) => {
+
+// find all
+app.get("/api/v1/all-resume/:email", async (req, res) => {
   try {
     const email = req.params.email
     const query = { userEmail: email }
-    const result = await resumeCollection.findOne(query)
+    const result = await resumeCollection.find(query).toArray()
     res.send(result);
   }
   catch (error) {
-    console.log(error)
+    res.status(500).send({ message: 'An error occurred', error: err.message });
   }
 })
 
