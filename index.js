@@ -401,13 +401,14 @@ app.get('/api/v1/reviews', async (req, res) => {
 app.post('/api/v1/create-payment-intent',async (req, res) =>{
   const {price} = req.body
   const amount = parseInt(price * 100)
-  if(!price || amount < 1) return
+  // if(!price || amount < 1) return
   const {client_secret} = await stripe.paymentIntents.create({
     amount: amount,
     currency: 'usd',
     payment_method_types: ['card']
   })
   res.send({clientSecret: client_secret})
+  console.log(client_secret);
 })
 
 // save price info in price collection
