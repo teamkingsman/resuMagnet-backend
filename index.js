@@ -263,7 +263,18 @@ app.get("/api/v1/coverletter/:email", async (req, res) => {
     res.send(result);
   }
   catch (error) {
-    console.log(error)
+    res.status(500).send({ message: 'An error occurred', error: err.message });
+  }
+})
+app.get("/api/v1/get-coverletter/:id", async (req, res) => {
+  try {
+    const id = req.params.id
+    const query = { _id: new ObjectId(id) }
+    const result = await coverLetterCollection.findOne(query)
+    res.send(result);
+  }
+  catch (error) {
+    res.status(500).send({ message: 'An error occurred', error: err.message });
   }
 })
 // find all
@@ -275,7 +286,7 @@ app.get("/api/v1/all-coverletter/:email", async (req, res) => {
     res.send(result);
   }
   catch (error) {
-    console.log(error)
+    res.status(500).send({ message: 'An error occurred', error: err.message });
   }
 })
 // cover letter post api
