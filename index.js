@@ -7,7 +7,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const jwt = require("jsonwebtoken");
 const morgan = require("morgan");
 const port = process.env.PORT || 5000;
-// const stripe = require('stripe')(process.env.PAYMENT_SECRET_KEY)
+const stripe = require('stripe')(process.env.PAYMENT_SECRET_KEY)
 const corsOptions = {
   origin: ["http://localhost:3000", "http://localhost:5000", "https://resu-magnet-frontend.vercel.app", "https://resu-magnet-backend.vercel.app"],
   credentials: true,
@@ -55,6 +55,7 @@ const cvCollection = database.collection("cvCollection");
 const coverLetterCollection = database.collection("coverLetterCollection");
 const resumePublicCollection = database.collection("resumePublicCollection");
 const UserReviewcollections = database.collection("UserReviewcollections");
+const paymentCollection = database.collection("payments");
 
 //JWT Middleware
 app.post("/api/v1/auth/access-token", async (req, res) => {
@@ -385,6 +386,29 @@ app.get('/api/v1/reviews', async (req, res) => {
   res.send(result)
 })
 
+// Generate client secret for stripe payment
+app.post('/api/v1/create-payment-intent',async (req, res) =>{
+  const {price} = req.body
+  const amount = parseInt(price * 100)
+  if(!price || amount < 1) return
+  const {client_secret} = await stripe.paymentIntents.create({
+    amount: amount,
+    currency: 'usd',
+    payment_method_types: ['card']
+  })
+  res.send({clientSecret: client_secret})
+})
+
+// save price info in price collection
+app.post('/api/v1/payments', async(req, res) =>{
+  const price = req.body
+  const result = await paymentCollection.insertOne(price)
+  res.send(result)
+})
+app.get('/api/v1/payments', async (req, res) =>{
+  const result = await paymentCollection.find().toArray()
+  res.send(result);
+})
 
 
 
