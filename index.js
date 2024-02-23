@@ -159,6 +159,44 @@ app.get("/api/v1/users/:email", verify, async (req, res) => {
     console.log(error)
   }
 });
+
+// user role  change by payment
+app.patch('/api/v1/users/student/:email', async(req, res) =>{
+  const email = req.params.email;
+  console.log(email);
+  const filter = {email:(email)}
+  const updateDoc = {
+    $set: {
+      usertype: 'student'
+    }
+  }
+  const result = await userCollection.updateOne(filter, updateDoc);
+  res.send(result);
+})
+app.patch('/api/v1/users/job/:email', async(req, res) =>{
+  const email = req.params.email;
+  console.log(email);
+  const filter = {email:(email)}
+  const updateDoc = {
+    $set: {
+      usertype: 'job'
+    }
+  }
+  const result = await userCollection.updateOne(filter, updateDoc);
+  res.send(result);
+})
+app.patch('/api/v1/users/professional/:email', async(req, res) =>{
+  const email = req.params.email;
+  console.log(email);
+  const filter = {email:(email)}
+  const updateDoc = {
+    $set: {
+      usertype: 'professional'
+    }
+  }
+  const result = await userCollection.updateOne(filter, updateDoc);
+  res.send(result);
+})
 // ----------Public share api--------//
 
 // app.get("/api/v1/publicResume/:id", async (req, res) => {
