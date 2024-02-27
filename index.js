@@ -54,6 +54,7 @@ const resumeCollection = database.collection("resumeCollection");
 const cvCollection = database.collection("cvCollection");
 const coverLetterCollection = database.collection("coverLetterCollection");
 const resumePublicCollection = database.collection("resumePublicCollection");
+const postCollection = database.collection("postCollection");
 
 //JWT Middleware
 app.post("/api/v1/auth/access-token", async (req, res) => {
@@ -180,6 +181,12 @@ app.get("/api/v1/users/:email", verify, async (req, res) => {
 //   res.send(rsultId);
 
 // })
+// ----------------------Post Api---------------- //
+app.post("/api/v1/posts", async (req, res) => {
+  const item = req.body;
+  const result = await postCollection.insertOne(item);
+  res.send(result);
+});
 // ---------------------- Resume Api ----------------- //
 // resume api
 app.get("/api/v1/resume/:email", async (req, res) => {
