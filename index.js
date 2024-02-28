@@ -182,11 +182,35 @@ app.get("/api/v1/users/:email", verify, async (req, res) => {
 
 // })
 // ----------------------Post Api---------------- //
+// create post
 app.post("/api/v1/posts", async (req, res) => {
   const item = req.body;
   const result = await postCollection.insertOne(item);
   res.send(result);
 });
+ // get post
+ app.get("/api/v1/posts", async (req, res) => {
+  const result = await postCollection.find().toArray();
+  res.send(result);
+});
+// get specific post
+app.get("/api/v1/posts/:id", async (req, res) => {
+  const id = req.params.id;
+  const query = { _id: new ObjectId(id) };
+  const result = await postCollection.findOne(query);
+  res.send(result);
+});
+// like dislike
+app.patch("/api/v1/posts/:id", async (req, res) => {
+  const id = req.params.id;
+  const query = { _id: new ObjectId(id) };
+  const result = await postCollection.updateOne(query, req.body);
+  res.send(result);
+});
+
+
+
+
 // ---------------------- Resume Api ----------------- //
 // resume api
 app.get("/api/v1/resume/:email", async (req, res) => {
