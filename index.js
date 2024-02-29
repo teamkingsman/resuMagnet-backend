@@ -59,10 +59,10 @@ const resumeCollection = database.collection("resumeCollection");
 const cvCollection = database.collection("cvCollection");
 const coverLetterCollection = database.collection("coverLetterCollection");
 const resumePublicCollection = database.collection("resumePublicCollection");
-const postCollection = database.collection("postCollection");
-const commentCollection = database.collection("commentCollection");
 const UserReviewcollections = database.collection("UserReviewcollections");
 const paymentCollection = database.collection("payments");
+const postCollection = database.collection("postCollection");
+const commentCollection = database.collection("commentCollection");
 
 //JWT Middleware
 app.post("/api/v1/auth/access-token", async (req, res) => {
@@ -225,6 +225,10 @@ app.patch('/api/v1/users/professional/:email', async(req, res) =>{
 //   res.send(rsultId);
 
 // })
+
+
+
+
 // ----------------------Post Api---------------- //
 // create post
 app.post("/api/v1/posts", async (req, res) => {
@@ -269,6 +273,8 @@ app.get("/api/v1/comment/:postId", async (req, res) => {
  
 
 
+
+
 // ---------------------- Resume Api ----------------- //
 // resume api
 app.get("/api/v1/resume/:email", async (req, res) => {
@@ -281,10 +287,6 @@ app.get("/api/v1/resume/:email", async (req, res) => {
     console.log(error);
   }
 });
-  catch (error) {
-    console.log(error)
-  }
-})
 
 // find all
 app.get("/api/v1/all-resume/:email", async (req, res) => {
@@ -298,8 +300,6 @@ app.get("/api/v1/all-resume/:email", async (req, res) => {
     res.status(500).send({ message: 'An error occurred', error: err.message });
   }
 })
-
-
 app.get("/api/v1/getresume/:id", async (req, res) => {
   try {
     const id = req.params.id;
@@ -332,7 +332,6 @@ app.put("/api/v1/resume", async (req, res) => {
     res.status(500).send({ message: "An error occurred", error: err.message });
   }
 });
-
 //update resume template
 app.patch("/api/v1/resume/:id/template", async (req, res) => {
   try {
@@ -362,10 +361,7 @@ app.get("/api/v1/coverletter/:email", async (req, res) => {
     console.log(error);
   }
 });
-  catch (error) {
-    res.status(500).send({ message: 'An error occurred', error: err.message });
-  }
-})
+ 
 app.get("/api/v1/get-coverletter/:id", async (req, res) => {
   try {
     const id = req.params.id
