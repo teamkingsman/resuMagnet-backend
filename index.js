@@ -239,6 +239,18 @@ app.get("/api/v1/resume/:email", async (req, res) => {
     console.log(error);
   }
 });
+app.get("/api/v1/resume/:email", async (req, res) => {
+  try {
+    const email = req.params.email
+    const query = { userEmail: email }
+    const result = await resumeCollection.findOne(query)
+    res.send(result);
+  }
+  catch (error) {
+    console.log(error)
+  }
+})
+
 app.get("/api/v1/getresume/:id", async (req, res) => {
   try {
     const id = req.params.id;
@@ -301,6 +313,18 @@ app.get("/api/v1/coverletter/:email", async (req, res) => {
     console.log(error);
   }
 });
+// find all
+app.get("/api/v1/all-coverletter/:email", async (req, res) => {
+  try {
+    const email = req.params.email
+    const query = { userEmail: email }
+    const result = await coverLetterCollection.find(query).toArray()
+    res.send(result);
+  }
+  catch (error) {
+    console.log(error)
+  }
+})
 // cover letter post api
 
 app.put("/api/v1/coverletter", async (req, res) => {
@@ -337,6 +361,18 @@ app.get("/api/v1/cv/:email", async (req, res) => {
     console.log(error);
   }
 });
+// find all
+app.get("/api/v1/all-cv/:email", async (req, res) => {
+  try {
+    const email = req.params.email
+    const query = { userEmail: email }
+    const result = await cvCollection.find(query).toArray()
+    res.send(result);
+  }
+  catch (error) {
+    console.log(error)
+  }
+})
 app.get("/api/v1/getcv/:id", async (req, res) => {
   try {
     const id = req.params.id;
@@ -385,7 +421,26 @@ app.patch("/api/v1/cv/:id/template", async (req, res) => {
       .status(500)
       .send({ message: "An error occurred", error: error.message });
   }
-});
+})
+
+// ------------cient review----------------//
+app.post('/api/v1/reviews', async (req, res) => {
+  const review = req.body;
+  const result = await UserReviewcollections.insertOne(review);
+  res.send(result)
+
+})
+
+app.get('/api/v1/reviews', async (req, res) => {
+  const cursor =  UserReviewcollections.find()
+  const result = await cursor.toArray();
+  res.send(result)
+})
+
+
+
+
+
 
 //  user comment
 
