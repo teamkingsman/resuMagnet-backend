@@ -56,6 +56,8 @@ const coverLetterCollection = database.collection("coverLetterCollection");
 const resumePublicCollection = database.collection("resumePublicCollection");
 const UserReviewcollections = database.collection("UserReviewcollections");
 const paymentCollection = database.collection("payments");
+const postCollection = database.collection("postCollection");
+const commentCollection = database.collection("commentCollection");
 
 //JWT Middleware
 app.post("/api/v1/auth/access-token", async (req, res) => {
@@ -220,6 +222,56 @@ app.patch('/api/v1/users/professional/:email', async(req, res) =>{
 //   res.send(rsultId);
 
 // })
+
+
+
+
+// ----------------------Post Api---------------- //
+// create post
+app.post("/api/v1/posts", async (req, res) => {
+  const item = req.body;
+  const result = await postCollection.insertOne(item);
+  res.send(result);
+});
+// get post
+app.get("/api/v1/posts", async (req, res) => {
+  const result = await postCollection.find().toArray();
+  res.send(result);
+});
+// get specific post
+app.get("/api/v1/posts/:id", async (req, res) => {
+  const id = req.params.id;
+  const query = { _id: new ObjectId(id) };
+  const result = await postCollection.findOne(query);
+  res.send(result);
+});
+// like dislike
+app.patch("/api/v1/posts/:id", async (req, res) => {
+  const id = req.params.id;
+  const query = { _id: new ObjectId(id) };
+  const result = await postCollection.updateOne(query, req.body);
+  res.send(result);
+});
+// --------comments api---------//
+// add comment
+app.post("/api/v1/comment", async (req, res) => {
+  const item = req.body;
+  const result = await commentCollection.insertOne(item);
+  res.send(result);
+});
+
+// get comment by post id
+app.get("/api/v1/comment/:postId", async (req, res) => {
+  const postId = req.params.postId;
+  const query = { postId: postId };
+  const comments = await commentCollection.find(query).toArray();
+  res.send(comments);
+});
+ 
+
+
+
+
 // ---------------------- Resume Api ----------------- //
 // resume api
 app.get("/api/v1/resume/:email", async (req, res) => {
