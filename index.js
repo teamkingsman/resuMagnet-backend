@@ -7,7 +7,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const jwt = require("jsonwebtoken");
 const morgan = require("morgan");
 const port = process.env.PORT || 5000;
-// const stripe = require('stripe')(process.env.PAYMENT_SECRET_KEY)
+const stripe = require('stripe')(process.env.PAYMENT_SECRET_KEY)
 const corsOptions = {
   origin: [
     "http://localhost:3000",
@@ -61,6 +61,8 @@ const coverLetterCollection = database.collection("coverLetterCollection");
 const resumePublicCollection = database.collection("resumePublicCollection");
 const postCollection = database.collection("postCollection");
 const commentCollection = database.collection("commentCollection");
+const UserReviewcollections = database.collection("UserReviewcollections");
+const paymentCollection = database.collection("payments");
 
 //JWT Middleware
 app.post("/api/v1/auth/access-token", async (req, res) => {
@@ -162,6 +164,44 @@ app.get("/api/v1/users/:email", verify, async (req, res) => {
     console.log(error);
   }
 });
+
+// user role  change by payment
+app.patch('/api/v1/users/student/:email', async(req, res) =>{
+  const email = req.params.email;
+  console.log(email);
+  const filter = {email:(email)}
+  const updateDoc = {
+    $set: {
+      usertype: 'student'
+    }
+  }
+  const result = await userCollection.updateOne(filter, updateDoc);
+  res.send(result);
+})
+app.patch('/api/v1/users/job/:email', async(req, res) =>{
+  const email = req.params.email;
+  console.log(email);
+  const filter = {email:(email)}
+  const updateDoc = {
+    $set: {
+      usertype: 'job'
+    }
+  }
+  const result = await userCollection.updateOne(filter, updateDoc);
+  res.send(result);
+})
+app.patch('/api/v1/users/professional/:email', async(req, res) =>{
+  const email = req.params.email;
+  console.log(email);
+  const filter = {email:(email)}
+  const updateDoc = {
+    $set: {
+      usertype: 'professional'
+    }
+  }
+  const result = await userCollection.updateOne(filter, updateDoc);
+  res.send(result);
+})
 // ----------Public share api--------//
 
 // app.get("/api/v1/publicResume/:id", async (req, res) => {
@@ -241,6 +281,23 @@ app.get("/api/v1/resume/:email", async (req, res) => {
     console.log(error);
   }
 });
+  catch (error) {
+    console.log(error)
+  }
+})
+
+// find all
+app.get("/api/v1/all-resume/:email", async (req, res) => {
+  try {
+    const email = req.params.email
+    const query = { userEmail: email }
+    const result = await resumeCollection.find(query).toArray()
+    res.send(result);
+  }
+  catch (error) {
+    res.status(500).send({ message: 'An error occurred', error: err.message });
+  }
+})
 
 
 app.get("/api/v1/getresume/:id", async (req, res) => {
@@ -305,6 +362,21 @@ app.get("/api/v1/coverletter/:email", async (req, res) => {
     console.log(error);
   }
 });
+  catch (error) {
+    res.status(500).send({ message: 'An error occurred', error: err.message });
+  }
+})
+app.get("/api/v1/get-coverletter/:id", async (req, res) => {
+  try {
+    const id = req.params.id
+    const query = { _id: new ObjectId(id) }
+    const result = await coverLetterCollection.findOne(query)
+    res.send(result);
+  }
+  catch (error) {
+    res.status(500).send({ message: 'An error occurred', error: err.message });
+  }
+})
 // find all
 app.get("/api/v1/all-coverletter/:email", async (req, res) => {
   try {
@@ -314,7 +386,7 @@ app.get("/api/v1/all-coverletter/:email", async (req, res) => {
     res.send(result);
   }
   catch (error) {
-    console.log(error)
+    res.status(500).send({ message: 'An error occurred', error: err.message });
   }
 })
 // cover letter post api
@@ -429,6 +501,30 @@ app.get('/api/v1/reviews', async (req, res) => {
   res.send(result)
 })
 
+// Generate client secret for stripe payment
+app.post('/api/v1/create-payment-intent',async (req, res) =>{
+  const {price} = req.body
+  const amount = parseInt(price * 100)
+  // if(!price || amount < 1) return
+  const {client_secret} = await stripe.paymentIntents.create({
+    amount: amount,
+    currency: 'usd',
+    payment_method_types: ['card']
+  })
+  res.send({clientSecret: client_secret})
+  console.log(client_secret);
+})
+
+// save price info in price collection
+app.post('/api/v1/payments', async(req, res) =>{
+  const price = req.body
+  const result = await paymentCollection.insertOne(price)
+  res.send(result)
+})
+app.get('/api/v1/payments', async (req, res) =>{
+  const result = await paymentCollection.find().toArray()
+  res.send(result);
+})
 
 
 
