@@ -227,6 +227,8 @@ app.get("/api/v1/comment/:postId", async (req, res) => {
   res.send(comments);
 });
  
+
+
 // ---------------------- Resume Api ----------------- //
 // resume api
 app.get("/api/v1/resume/:email", async (req, res) => {
@@ -440,5 +442,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`ResuMagnet is running on port ${port}`);
+  console.log(`ResuMagnet is running on port  ${port}`);
 });
