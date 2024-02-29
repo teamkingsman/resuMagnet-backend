@@ -226,7 +226,7 @@ app.get("/api/v1/comment/:postId", async (req, res) => {
   const comments = await commentCollection.find(query).toArray();
   res.send(comments);
 });
-
+ 
 // ---------------------- Resume Api ----------------- //
 // resume api
 app.get("/api/v1/resume/:email", async (req, res) => {
