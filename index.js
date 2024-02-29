@@ -213,14 +213,14 @@ app.patch("/api/v1/posts/:id", async (req, res) => {
 });
 // --------comments api---------//
 // add comment
-app.post("/comment", async (req, res) => {
+app.post("/api/v1/comment", async (req, res) => {
   const item = req.body;
   const result = await commentCollection.insertOne(item);
   res.send(result);
 });
 
 // get comment by post id
-app.get("/post/:postId/comments", async (req, res) => {
+app.get("/api/v1/comment/:postId", async (req, res) => {
   const postId = req.params.postId;
   const query = { postId: postId };
   const comments = await commentCollection.find(query).toArray();
