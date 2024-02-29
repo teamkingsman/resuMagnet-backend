@@ -239,17 +239,7 @@ app.get("/api/v1/resume/:email", async (req, res) => {
     console.log(error);
   }
 });
-app.get("/api/v1/resume/:email", async (req, res) => {
-  try {
-    const email = req.params.email
-    const query = { userEmail: email }
-    const result = await resumeCollection.findOne(query)
-    res.send(result);
-  }
-  catch (error) {
-    console.log(error)
-  }
-})
+
 
 app.get("/api/v1/getresume/:id", async (req, res) => {
   try {
